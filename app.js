@@ -69,7 +69,7 @@ app.patch("/update", auth, async (req, res) => {
     const { spreadsheetId, sheetName, row, col, newData } = req.body;
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: sheetName + "!" + row + col,
+      range: sheetName + "!" + col + row,
       valueInputOption: "USER_ENTERED",
       requestBody: { values: [newData] },
     });
