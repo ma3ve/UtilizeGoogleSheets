@@ -1,6 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
-
+const fs = require("fs");
 const auth = require("./auth");
 const oauth2Client = require("./oauth2Client");
 const { google } = require("googleapis");
@@ -75,14 +75,19 @@ app.patch("/update", auth, async (req, res) => {
     });
     res.send({ success: true });
   } catch (error) {
-    res.status(400).json({ name: error.name, message: error.message });
+    res.status(400).send({ name: error.name, message: error.message });
   }
 });
 
 app.get("/google/callback", async (req, res) => {
   const code = req.query.code;
   const { tokens } = await oauth2Client.getToken(code);
-  res.send({ success: true, tokens });
+  fs.writeFile("token.json", JSON.stringify(tokens), (err) => {
+    if (err) {
+      return res.send({ err });
+    }
+    res.send({ success: true });
+  });
 });
 
 app.listen(5000, () => {
